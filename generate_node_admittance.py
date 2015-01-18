@@ -40,7 +40,9 @@ with open('data.csv',newline='') as csvfile:
 with open('Ybus.csv','w',newline='') as YbusFile:
     writer=csv.writer(YbusFile)
     writer.writerows(Ybus)
+
 print(Ybus)
+#以下为消元得到L,D
 #print a
 
 '''
