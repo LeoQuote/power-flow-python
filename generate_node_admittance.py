@@ -37,13 +37,31 @@ with open('data.csv',newline='') as csvfile:
             Ybus[fromport,fromport]+=Y+BOrK
             Ybus[toport,toport]+=Y+BOrK
             Ybus[fromport,toport]=Ybus[toport,fromport]=-Y
-with open('Ybus.csv','w',newline='') as YbusFile:
-    writer=csv.writer(YbusFile)
-    writer.writerows(Ybus)
+def outputToFile(array,fileName):
+    with open(fileName,'w',newline='') as outputFile:
+        writer=csv.writer(outputFile)
+        writer.writerows(array)
+outputToFile(Ybus,'Ybus.csv')
+facterTable=Ybus.copy()
+#下三角消元
+for k in range(arraySize-1):
+    oneOverkk=1/facterTable[k,k]
+    for i in range(k+1,arraySize):
+        for j in range(k+1,arraySize):
+            facterTable[i,j]-=facterTable[i,k]*facterTable[k,j]*oneOverkk
+        facterTable[i,k]=0
+    print(facterTable)
 
-print(Ybus)
-#以下为消元得到L,D
+print(facterTable)
+#对角元规格化
+for i in range(arraySize):
+    #倒数存放对角元
+    facterTable[i,i]=1/facterTable[i,i]
+    for j in range(i+1,arraySize):
+        #规格化其他元素
+        facterTable[i,j]*=facterTable[i,i]
 #print a
+outputToFile(facterTable,'facterTable.csv')
 
 '''
 file_object = open('data.csv')
