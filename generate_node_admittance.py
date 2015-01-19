@@ -37,6 +37,7 @@ with open('data.csv',newline='') as csvfile:
             Ybus[fromport,fromport]+=Y+BOrK
             Ybus[toport,toport]+=Y+BOrK
             Ybus[fromport,toport]=Ybus[toport,fromport]=-Y
+#定义个输出数组到csv文件的函数,以后会用到好多次
 def outputToFile(array,fileName):
     with open(fileName,'w',newline='') as outputFile:
         writer=csv.writer(outputFile)
@@ -62,7 +63,31 @@ for i in range(arraySize):
         facterTable[i,j]*=facterTable[i,i]
 #print a
 outputToFile(facterTable,'facterTable.csv')
-
+#初始化Z阵和f阵, 详见电力系统分析上册 90页
+Zbus=zeros((arraySize,arraySize),complex)
+for j in range(arraySize-1,-1,-1):
+    f=[]
+    f+=[0]*j
+    h=f.copy()
+    f+=[1]
+    for i in range(j+1,arraySize):
+        f+=[0]
+        for k in range(j,i):
+            #print(j,i,k)
+            #临时变量temp,存储l f 的乘积
+            f[i]-=facterTable[k,i]*f[k]
+    #print(f)
+    for i in range(j,arraySize):
+        h+=[f[i]*facterTable[i,i]]
+    print(h)
+    #print(f,j)
+    for i in range(arraySize-1,-1,-1):
+        Zbus[i,j]=h[i]
+        print(i,j)
+        for k in range(i+1,arraySize):
+            print('in!')
+            Zbus[i,j]-=facterTable[i,k]*Zbus[k,j]
+outputToFile(Zbus,'Zbus.csv')
 '''
 file_object = open('data.csv')
 try:
