@@ -30,7 +30,7 @@ with open('data.csv',newline='') as csvfile:
             #如果大于0.85,认为是变压器,做相关变换
             #print(Z)
             #print(Y)
-            Ybus[fromport,toport]+=Y
+            Ybus[fromport,fromport]+=Y
             Ybus[toport,toport]+=Y/(BOrK*BOrK)
             Ybus[toport,fromport]=Ybus[fromport,toport]=-Y/BOrK
         else:
@@ -44,17 +44,9 @@ def outputToFile(array,fileName):
         writer=csv.writer(outputFile)
         writer.writerows(array)
 outputToFile(Ybus.toarray(),'Ybus.csv')
-facterTable=Ybus.copy()
-#下三角消元
-'''
-for k in range(arraySize-1):
-    oneOverkk=1/facterTable[k,k]
-    for i in range(k+1,arraySize):
-        for j in range(k+1,arraySize):
-            facterTable[i,j]-=facterTable[i,k]*facterTable[k,j]*oneOverkk
-        facterTable[i,k]=0
-    #print(facterTable)
-
+print(Ybus.toarray())
+facterTable=sparse.triu(Ybus)
+facterTable=sparse.lil_matrix(facterTable)
 print(facterTable)
 #对角元规格化
 for i in range(arraySize):
@@ -64,7 +56,8 @@ for i in range(arraySize):
         #规格化其他元素
         facterTable[i,j]*=facterTable[i,i]
 #print a
-outputToFile(facterTable,'facterTable.csv')
+outputToFile(facterTable.toarray(),'facterTable.csv')
+'''
 #初始化Z阵和f阵, 详见电力系统分析上册 90页
 Zbus=zeros((arraySize,arraySize),complex)
 for j in range(arraySize-1,-1,-1):

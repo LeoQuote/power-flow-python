@@ -29,7 +29,7 @@ with open('data.csv',newline='') as csvfile:
             #如果大于0.85,认为是变压器,做相关变换
             #print(Z)
             #print(Y)
-            Ybus[fromport,toport]+=Y
+            Ybus[fromport,fromport]+=Y
             Ybus[toport,toport]+=Y/(BOrK*BOrK)
             Ybus[toport,fromport]=Ybus[fromport,toport]=-Y/BOrK
         else:
@@ -42,6 +42,20 @@ def outputToFile(array,fileName):
     with open(fileName,'w',newline='') as outputFile:
         writer=csv.writer(outputFile)
         writer.writerows(array)
+print(Ybus)
+'''
+YbusRealImag=zeros((arraySize,arraySize*2),float)
+for i in range(arraySize):
+    for j in range(arraySize):
+        YbusRealImag[i,j*2]=Ybus[i,j].real
+        YbusRealImag[i,j*2+1]=Ybus[i,j].imag
+'''
+e=[1,1,1.1,1.05]
+f=[0,0,0,0]
+
+while(unfinished()):
+
+
 outputToFile(Ybus,'Ybus.csv')
 facterTable=Ybus.copy()
 #下三角消元
@@ -51,7 +65,7 @@ for k in range(arraySize-1):
         for j in range(k+1,arraySize):
             facterTable[i,j]-=facterTable[i,k]*facterTable[k,j]*oneOverkk
         facterTable[i,k]=0
-    print(facterTable)
+    #print(facterTable)
 
 print(facterTable)
 #对角元规格化
@@ -79,13 +93,13 @@ for j in range(arraySize-1,-1,-1):
     #print(f)
     for i in range(j,arraySize):
         h+=[f[i]*facterTable[i,i]]
-    print(h)
+    #print(h)
     #print(f,j)
     for i in range(arraySize-1,-1,-1):
         Zbus[i,j]=h[i]
-        print(i,j)
+        #print(i,j)
         for k in range(i+1,arraySize):
-            print('in!')
+            #print('in!')
             Zbus[i,j]-=facterTable[i,k]*Zbus[k,j]
 outputToFile(Zbus,'Zbus.csv')
 '''
