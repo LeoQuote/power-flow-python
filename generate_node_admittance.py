@@ -58,8 +58,19 @@ f = [0, 0, 0, 0]
 n = y_bus_size-1
 pv_point=2
 m = pv_point
-jacobi_array = zeros((n, n), float)
+jacobi_array = zeros((2*n, 2*n), float)
+calc_times=1
+def unfinished():
+    if calc_times==1:
+        return 1
+    elif calc_times>100:
+        return 0
+    else :
+        return 1
+
 while(unfinished()):
+    print('这是第',calc_times,'次迭代')
+    calc_times+=1
     for i in range(m):
         for j in range(n):
             jacobi_array[2*i, 2*j]= - y_bus[i,j].real * e[i] - y_bus[i,j].imag *f[i]
@@ -80,59 +91,4 @@ while(unfinished()):
         jacobi_array[2*i,2*i+1]+=injection_current.real
         jacobi_array[2*i+1,2*i]= - 2*e[i]
         jacobi_array[2*i+1,2*i+1]= -2*f[i]
-outputToFile(y_bus, 'y_bus.csv')
-facter_table=y_bus.copy()
-# 下三角消元
-for k in range(y_bus_size - 1):
-    oneOverkk=1 / facter_table[k, k]
-    for i in range(k + 1, y_bus_size):
-        for j in range(k + 1, y_bus_size):
-            facter_table[i,
-    j] -= facter_table[i,
-    k] * facter_table[k,
-     j] * oneOverkk
-        facter_table[i, k]=0
-    # print(facter_table)
-
-print(facter_table)
-# 对角元规格化
-for i in range(y_bus_size):
-    # 倒数存放对角元
-    facter_table[i, i]=1 / facter_table[i, i]
-    for j in range(i + 1, y_bus_size):
-        # 规格化其他元素
-        facter_table[i, j] *= facter_table[i, i]
-# print a
-outputToFile(facter_table, 'facter_table.csv')
-# 初始化Z阵和f阵, 详见电力系统分析上册 90页
-z_bus=zeros((y_bus_size, y_bus_size), complex)
-for j in range(y_bus_size - 1, -1, -1):
-    f=[]
-    f += [0] * j
-    h=f.copy()
-    f += [1]
-    for i in range(j + 1, y_bus_size):
-        f += [0]
-        for k in range(j, i):
-            # print(j,i,k)
-            # 临时变量temp,存储l f 的乘积
-            f[i] -= facter_table[k, i] * f[k]
-    # print(f)
-    for i in range(j, y_bus_size):
-        h += [f[i] * facter_table[i, i]]
-    # print(h)
-    # print(f,j)
-    for i in range(y_bus_size - 1, -1, -1):
-        z_bus[i, j]=h[i]
-        # print(i,j)
-        for k in range(i + 1, y_bus_size):
-            # print('in!')
-            z_bus[i, j] -= facter_table[i, k] * z_bus[k, j]
-outputToFile(z_bus, 'z_bus.csv')
-'''
-file_object = open('data.csv')
-try:
-    all_the_text = file_object.read(  )
-finally:
-    file_object.close(  )
-'''
+    print('形成雅各比矩阵如下',"\n",jacobi_array)
