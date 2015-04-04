@@ -45,22 +45,24 @@ def outputToFile(array, fileName):
         writer = csv.writer(outputFile)
         writer.writerows(array)
 print(y_bus)
-'''
-y_busRealImag=zeros((y_bus_size,y_bus_size*2),float)
-for i in range(y_bus_size):
-    for j in range(y_bus_size):
-        y_busRealImag[i,j*2]=y_bus[i,j].real
-        y_busRealImag[i,j*2+1]=y_bus[i,j].imag
-'''
 e = [1, 1, 1.1, 1.05]
 f = [0, 0, 0, 0]
+p = [-0.3,-0.55,0.5]
+q = [-0.18,-0.13,0]
+v = [0,0,1.1]
 #电压初值
 n = y_bus_size-1
 pv_point=2
 m = pv_point
 jacobi_array = zeros((2*n, 2*n), float)
 calc_times=1
+global DELTA_P,DELTA_Q,DELTA_V
 def unfinished():
+    for i in range(m):
+        DELTA_P[i]+=p[i]
+        for j in range(y_bus_size):
+            DELTA_P[i]+= -e[i]*(y_bus[i,j].real*e[j]-y_bus[i,j].imag*f[j]) - f[i](y_bus[i,j].real*f[j]+y_bus[i,j].imag*e[j])
+            
     if calc_times==1:
         return 1
     elif calc_times>100:
@@ -92,3 +94,5 @@ while(unfinished()):
         jacobi_array[2*i+1,2*i]= - 2*e[i]
         jacobi_array[2*i+1,2*i+1]= -2*f[i]
     print('形成雅各比矩阵如下',"\n",jacobi_array)
+    #solving the matrix
+    
