@@ -31,7 +31,8 @@ with open('data.csv', newline='') as csvfile:
             # print(Y)
             y_bus[from_port, from_port] += Y
             y_bus[to_port, to_port] += Y / (b_or_k * b_or_k)
-            y_bus[to_port, from_port] = y_bus[from_port, to_port] = -Y / b_or_k
+            y_bus[to_port, from_port
+            ] = y_bus[from_port, to_port] = -Y / b_or_k
         else:
             b_or_k = complex(0, b_or_k)
             y_bus[from_port, from_port] += Y + b_or_k
@@ -49,7 +50,7 @@ e = [1, 1, 1.1, 1.05]
 f = [0, 0, 0, 0]
 p = [-0.3,-0.55,0.5]
 q = [-0.18,-0.13,0]
-v = [0,0,1.1]
+v = [0,0,1.21]
 #电压初值
 n = y_bus_size-1
 pv_point=2
@@ -58,10 +59,17 @@ jacobi_array = zeros((2*n, 2*n), float)
 calc_times=1
 global DELTA_P,DELTA_Q,DELTA_V
 def unfinished():
+    DELTA_P=p
+    DELTA_Q=q
+    DELTA_V=v
     for i in range(m):
-        DELTA_P[i]+=p[i]
         for j in range(y_bus_size):
-            DELTA_P[i]+= -e[i]*(y_bus[i,j].real*e[j]-y_bus[i,j].imag*f[j]) - f[i](y_bus[i,j].real*f[j]+y_bus[i,j].imag*e[j])
+            gmb = y_bus[i,j].real * e[j] - y_bus[i,j].imag * f[j]
+            gpb = y_bus[i,j].real * f[j] + y_bus[i,j].imag * e[j]
+            #以上分别代表 Gij-Bij 和 Gij + Bij(电力系统分析下册 P58 11-46,11-47)
+            DELTA_P[i]+= - e[i] * gmb - f[i] * gpb
+            DELTA_Q[i]+= - f[i] * gmb + e[i] * gpb
+    print(DELTA_P)
             
     if calc_times==1:
         return 1
@@ -75,9 +83,12 @@ while(unfinished()):
     calc_times+=1
     for i in range(m):
         for j in range(n):
-            jacobi_array[2*i, 2*j]= - y_bus[i,j].real * e[i] - y_bus[i,j].imag *f[i]
-            jacobi_array[2*i, 2*j+1 ] = - y_bus[i,j].real * f[i] + y_bus[i,j].imag*e[i]
-            jacobi_array[2*i+1,2*j] =  jacobi_array[2*i, 2*j+1 ]
+            jacobi_array[2*i, 2*j
+            ]= - y_bus[i,j].real * e[i] - y_bus[i,j].imag *f[i]
+            jacobi_array[2*i, 2*j+1 
+            ] = - y_bus[i,j].real * f[i] + y_bus[i,j].imag*e[i]
+            jacobi_array[2*i+1,2*j
+            ] =  jacobi_array[2*i, 2*j+1 ]
             jacobi_array[2*i+1,2*j+1] = jacobi_array[2*i,2*j]
         injection_current= 1+2j
         jacobi_array[2*i,2*i]+= injection_current.imag
@@ -86,13 +97,16 @@ while(unfinished()):
         jacobi_array[2*i+1,2*i+1]+= -injection_current.imag
     for i in range (m,n):
         for j in range(n):
-            jacobi_array[2*i, 2*j]= - y_bus[i,j].real * e[i] - y_bus[i,j].imag *f[i]
-            jacobi_array[2*i, 2*j+1 ] = - y_bus[i,j].real * f[i] + y_bus[i,j].imag*e[i]
+            jacobi_array[2*i, 2*j
+            ]= - y_bus[i,j].real * e[i] - y_bus[i,j].imag *f[i]
+            jacobi_array[2*i, 2*j+1 
+            ] = - y_bus[i,j].real * f[i] + y_bus[i,j].imag*e[i]
         injection_current= 1+2j
         jacobi_array[2*i,2*i]+= injection_current.imag
         jacobi_array[2*i,2*i+1]+=injection_current.real
         jacobi_array[2*i+1,2*i]= - 2*e[i]
         jacobi_array[2*i+1,2*i+1]= -2*f[i]
-    print('形成雅各比矩阵如下',"\n",jacobi_array)
+    #print('形成雅各比矩阵如下',"\n",jacobi_array)
     #solving the matrix
     
+
