@@ -137,7 +137,7 @@ while(unfinished()):
         jacobi_array[2*i,2*i+1] += - sigma_gpb
         
         
-    print('形成雅各比矩阵如下',"\n",jacobi_array)
+    #print('形成雅各比矩阵如下',"\n",jacobi_array)
     #先调整矩阵使最大值在对角线上,并加负号
     for i in range(n):
         swap_rows(jacobi_array,2*i,2*i+1)
@@ -159,10 +159,11 @@ while(unfinished()):
         one_over_kk=1/jacobi_array[k,k]
         for i in range(k+1,jacobi_array_size):
             for j in range(k+1,jacobi_array_size):
-                jacobi_array[i,j]-= jacobi_array[i,k] * jacobi_array[k,j]*one_over_kk
+                jacobi_array[i,j]-= jacobi_array[i,k
+                ] * jacobi_array[k,j]*one_over_kk
             delta_w[i] -= jacobi_array[i,k] * delta_w[k] * one_over_kk
             jacobi_array[i,k]=0
-    print(jacobi_array,"\n",delta_w)
+    #print(jacobi_array,"\n",delta_w)
     
     #解方程  jacobi_array *delta_v = delta_w
     #回代
