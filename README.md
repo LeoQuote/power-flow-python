@@ -1,4 +1,4 @@
-# power-flow-python
+# power-flow-python[![Build Status](https://travis-ci.org/LeoQuote/power-flow-python.svg?branch=master)](https://travis-ci.org/LeoQuote/power-flow-python)
 用python写的矩阵消去和潮流计算程序
 
 ###运行环境
