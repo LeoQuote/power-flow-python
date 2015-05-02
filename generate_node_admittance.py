@@ -3,7 +3,7 @@
 import csv
 import time
 start = time.clock()
-from numpy import *
+import numpy
 # 第一次打开文件,统计最大的节点数
 with open('data.csv', newline='') as csvfile:
     spamreader = csv.DictReader(csvfile)
@@ -18,7 +18,7 @@ with open('data.csv', newline='') as csvfile:
     
 with open('data.csv', newline='') as csvfile:
     spamreader = csv.DictReader(csvfile)
-    y_bus = zeros((y_bus_size, y_bus_size), complex)
+    y_bus = numpy.zeros((y_bus_size, y_bus_size), complex)
     for row in spamreader:
         # print('in!')
         # print(int(a[1]))
@@ -95,10 +95,34 @@ def swap_rows(arr, frm, to):
 def swap_cols(arr, frm, to):
     arr[:,[frm, to]] = arr[:,[to, frm]]
 
+def solve(array_a,array_b):
+    '''
+    解方程ax=b
+    '''
+    array_size=numpy.size(array_a,0)
+    array_x= [0]* array_size
+    for k in range(array_size-1):
+        one_over_kk=1/array_a[k,k]
+        for i in range(k+1,array_size):
+            for j in range(k+1,array_size):
+                array_a[i,j]-= array_a[i,k
+                ] * array_a[k,j]*one_over_kk
+            delta_w[i] -= array_a[i,k] * delta_w[k] * one_over_kk
+            array_a[i,k]=0
+    #print(jacobi_array,"\n",delta_w)
+    #解方程  jacobi_array *delta_v = delta_w
+    #回代
+    for i in range(array_size-1,-1,-1):
+        array_x[i] = array_b[i]
+        for j in range(i+1,array_size):
+            array_x[i] -= array_a[i,j] * array_x[j]
+        array_x[i] = array_x[i]/array_a[i,i]
+    return array_x
+        
 while(unfinished()):
     print('这是第',calc_times,'次迭代')
     calc_times+=1
-    jacobi_array = zeros((2*n, 2*n), float)
+    jacobi_array = numpy.zeros((2*n, 2*n), float)
     for i in range(m):
         #以下形成非对角元
         for j in range(n):
@@ -155,23 +179,8 @@ while(unfinished()):
     for i in range(m,n):
         delta_w[2*i] = DELTA_V[i]
         delta_w[2*i+1] = DELTA_P[i]
-    for k in range(jacobi_array_size-1):
-        one_over_kk=1/jacobi_array[k,k]
-        for i in range(k+1,jacobi_array_size):
-            for j in range(k+1,jacobi_array_size):
-                jacobi_array[i,j]-= jacobi_array[i,k
-                ] * jacobi_array[k,j]*one_over_kk
-            delta_w[i] -= jacobi_array[i,k] * delta_w[k] * one_over_kk
-            jacobi_array[i,k]=0
-    #print(jacobi_array,"\n",delta_w)
-    
-    #解方程  jacobi_array *delta_v = delta_w
-    #回代
-    for i in range(jacobi_array_size-1,-1,-1):
-        delta_v[i] = delta_w[i]
-        for j in range(i+1,jacobi_array_size):
-            delta_v[i] -= jacobi_array[i,j] * delta_v[j]
-        delta_v[i] = delta_v[i]/jacobi_array[i,i]
+        
+    delta_v=solve(jacobi_array,delta_w)
         
     print(delta_v)
     
